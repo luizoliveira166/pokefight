@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PokéFight Arena</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+ 
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-ball"></div>
+      <div>
+        <span class="brand-name">POKÉFIGHT</span>
+        <span class="brand-tag">ARENA · POKÉDEX</span>
+      </div>
+    </div>
+    <nav class="nav">
+      <button class="nav-btn active" data-tab="pokedex"      onclick="switchTab('pokedex')">POKÉDEX</button>
+      <button class="nav-btn"        data-tab="battle"       onclick="switchTab('battle')">⚔ BATALHA</button>
+      <button class="nav-btn gold"   data-tab="championship" onclick="switchTab('championship')">🏆 CAMPEONATO</button>
+    </nav>
+    <button class="ham" id="ham" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <nav class="mob-nav" id="mob-nav">
+    <button class="nav-btn active" data-tab="pokedex"      onclick="switchTab('pokedex');closeMenu()">POKÉDEX</button>
+    <button class="nav-btn"        data-tab="battle"       onclick="switchTab('battle');closeMenu()">⚔ BATALHA</button>
+    <button class="nav-btn gold"   data-tab="championship" onclick="switchTab('championship');closeMenu()">🏆 CAMPEONATO</button>
+  </nav>
+</header>
+ 
+<!-- POKÉDEX DEVICE (search) -->
+<div class="device-wrap">
+  <div class="device">
+    <div class="device-left" style="display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0">
+      <div class="device-lens"></div>
+      <div class="device-leds">
+        <span class="led led-r"></span>
+        <span class="led led-y"></span>
+        <span class="led led-g"></span>
+      </div>
+    </div>
+    <div class="device-screen">
+      <div class="screen-bar">
+        <span>SISTEMA DE BUSCA v3.0</span>
+        <span class="screen-cursor">▮</span>
+      </div>
+      <div class="search-row">
+        <input type="text" id="buscador" class="search-input"
+          placeholder="Nome ou número — ex: charizard, 25"
+          onkeydown="if(event.key==='Enter')verPokemon()">
+        <button class="btn btn-red"  onclick="verPokemon()">BUSCAR</button>
+        <button class="btn btn-blue" onclick="randomPokemon()">RNG</button>
+      </div>
+    </div>
+    <div class="device-dpad" style="display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0">
+      <div class="dpad"><div class="dpad-v"></div><div class="dpad-h"></div></div>
+      <div class="dpad-btns"><button class="ab-btn ab-a">A</button><button class="ab-btn ab-b">B</button></div>
+    </div>
+  </div>
+</div>
+ 
+<!-- MAIN -->
+<main class="main">
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="pokedex"      onclick="switchTab('pokedex')">POKÉDEX</button>
+    <button class="tab-btn"        data-tab="battle"       onclick="switchTab('battle')">⚔ BATALHA</button>
+    <button class="tab-btn gold"   data-tab="championship" onclick="switchTab('championship')">🏆 CAMPEONATO</button>
+  </div>
+ 
+  <!-- POKÉDEX -->
+  <div class="panel active" id="panel-pokedex">
+    <div class="sec-label">// ARQUIVO DE COMBATENTES</div>
+    <div class="spinner" id="spinner"></div>
+    <div class="cards-grid" id="pikomons">
+      <div class="empty-state">
+        <div class="empty-icon">◎</div>
+        <p>NENHUM POKÉMON CARREGADO<br>USE A BUSCA ACIMA</p>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- BATALHA -->
+  <div class="panel" id="panel-battle">
+    <div class="sec-label">// ARENA 1v1</div>
+    <div class="fight-box">
+      <div class="box-title">CONFRONTO DIRETO</div>
+      <p class="box-hint">Busque um Pokémon e clique em <strong>⚔ BATALHA</strong> para colocá-lo em um slot.<br>Cada slot aceita um Pokémon diferente.</p>
+      <div class="vs-stage">
+        <div class="fight-slot" id="slot-a">
+          <div class="slot-empty-txt">SLOT 1</div>
+          <div class="slot-empty-sub">VAZIO</div>
+        </div>
+        <div class="vs-mid"><div class="vs-circle">VS</div></div>
+        <div class="fight-slot" id="slot-b">
+          <div class="slot-empty-txt">SLOT 2</div>
+          <div class="slot-empty-sub">VAZIO</div>
+        </div>
+      </div>
+      <div class="action-row">
+        <button class="btn btn-fight" onclick="startBattle()">⚔ LUTAR AGORA</button>
+        <button class="btn btn-ghost" onclick="clearBattle()">LIMPAR SLOTS</button>
+      </div>
+    </div>
+    <div class="live-arena" id="live-arena">
+      <div class="arena-label">// FIGHT LIVE</div>
+      <div class="hp-row">
+        <div class="hp-block">
+          <div class="hp-name" id="hp-name-a">—</div>
+          <div class="hp-track"><div class="hp-fill" id="hp-fill-a"></div></div>
+          <div class="hp-val"  id="hp-val-a">—</div>
+        </div>
+        <div class="hp-sep">HP</div>
+        <div class="hp-block right">
+          <div class="hp-name" id="hp-name-b">—</div>
+          <div class="hp-track"><div class="hp-fill" id="hp-fill-b"></div></div>
+          <div class="hp-val"  id="hp-val-b">—</div>
+        </div>
+      </div>
+      <div class="terminal" id="terminal"></div>
+      <div class="winner" id="winner">
+        <div class="winner-label">VENCEDOR</div>
+        <img id="winner-img" src="" alt="">
+        <div class="winner-name" id="winner-name"></div>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- CAMPEONATO -->
+  <div class="panel" id="panel-championship">
+    <div class="sec-label">// CAMPEONATO — 100 LUTAS</div>
+    <div class="champ-box">
+      <div class="box-title">POKÉFIGHT CHAMPIONSHIP</div>
+      <p class="box-hint">
+        Adicione <strong>2 ou mais Pokémon</strong> ao roster. O sistema sorteará 100 confrontos.<br>
+        <strong>Vitória = 3 pts &nbsp;·&nbsp; Empate = 1 pt &nbsp;·&nbsp; Derrota = 0 pts</strong>
+      </p>
+      <div class="roster" id="roster">
+        <div class="roster-empty" id="roster-empty">
+          <span>Busque Pokémon e clique em</span>
+          <strong>🏆 CAMPEONATO</strong>
+        </div>
+      </div>
+      <div class="action-row">
+        <button class="btn btn-gold"  onclick="startChamp()">🏆 INICIAR CAMPEONATO</button>
+        <button class="btn btn-ghost" onclick="clearRoster()">LIMPAR ROSTER</button>
+      </div>
+    </div>
+    <div class="prog-card" id="prog-card">
+      <div class="prog-head">
+        <span class="prog-title">PROGRESSO</span>
+        <span class="prog-count" id="prog-count">0 / 100</span>
+      </div>
+      <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="prog-fight" id="prog-fight"></div>
+    </div>
+    <div class="lb-card" id="lb-card">
+      <div class="lb-head">
+        <span>CLASSIFICAÇÃO AO VIVO</span>
+        <span>PTS · V · D · E</span>
+      </div>
+      <div class="lb-list" id="lb-list"></div>
+    </div>
+    <div class="champ-reveal" id="champ-reveal">
+      <div class="fire-l"></div>
+      <div class="fire-r"></div>
+      <span class="champ-crown">👑</span>
+      <img class="champ-sprite-img" id="champ-img" src="" alt="">
+      <div class="champ-sub">CAMPEÃO ABSOLUTO</div>
+      <div class="champ-name" id="champ-name"></div>
+      <div class="champ-stats" id="champ-stats"></div>
+    </div>
+  </div>
+</main>
+ 
+<div class="toast" id="toast"></div>
+<script src="script.js"></script>
+</body>
+</html>
